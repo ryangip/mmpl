@@ -76,6 +76,8 @@ import {makePlaybookAccessModalDefinition} from 'src/components/backstage/playbo
 import {makePlaybookCreateModal, PlaybookCreateModalProps} from 'src/components/create_playbook_modal';
 import {makeRhsRunDetailsTourDialog} from 'src/components/rhs/rhs_run_details_tour_dialog';
 
+import {FullPlaybook, Loaded} from './graphql/hooks';
+
 export function startPlaybookRun(teamId: string, postId?: string) {
     return async (dispatch: Dispatch<AnyAction>, getState: GetStateFunc) => {
         // Add unique id
@@ -142,10 +144,11 @@ export function openUpdateRunStatusModal(
 
 export function displayEditPlaybookAccessModal(
     playbookId: string,
+    playbook: Loaded<FullPlaybook>,
     onPlaybookChange?: React.Dispatch<React.SetStateAction<PlaybookWithChecklist | undefined>>,
 ) {
     return async (dispatch: Dispatch<AnyAction>) => {
-        dispatch(modals.openModal(makePlaybookAccessModalDefinition({playbookId, onPlaybookChange})));
+        dispatch(modals.openModal(makePlaybookAccessModalDefinition({playbookId, playbook, onPlaybookChange})));
     };
 }
 

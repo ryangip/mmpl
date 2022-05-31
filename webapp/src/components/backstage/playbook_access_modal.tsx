@@ -10,11 +10,12 @@ import styled from 'styled-components';
 
 import GenericModal from 'src/components/widgets/generic_modal';
 import {AdminNotificationType, PROFILE_CHUNK_SIZE} from 'src/constants';
-import {useEditPlaybook, useHasPlaybookPermission, useAllowMakePlaybookPrivate} from 'src/hooks';
-import {Playbook, PlaybookMember, PlaybookWithChecklist} from 'src/types/playbook';
+import {useHasPlaybookPermission, useAllowMakePlaybookPrivate} from 'src/hooks';
+import {PlaybookMember, PlaybookWithChecklist} from 'src/types/playbook';
 import ConfirmModal from 'src/components/widgets/confirmation_modal';
 
 import {PlaybookPermissionGeneral, PlaybookRole} from 'src/types/permissions';
+import {FullPlaybook, Loaded, usePlaybook, useUpdatePlaybook} from 'src/graphql/hooks';
 
 import SelectUsersBelow from './select_users_below';
 import UpgradeModal from './upgrade_modal';
@@ -23,6 +24,7 @@ const ID = 'playbooks_access';
 
 type Props = {
     playbookId: string
+    playbook: Loaded<FullPlaybook>,
     onPlaybookChange?: React.Dispatch<React.SetStateAction<PlaybookWithChecklist | undefined>>
 } & Partial<ComponentProps<typeof GenericModal>>;
 
@@ -66,12 +68,13 @@ const BlueArrow = styled.i`
 
 const PlaybookAccessModal = ({
     playbookId,
+    playbook,
     onPlaybookChange,
     ...modalProps
 }: Props) => {
     const {formatMessage} = useIntl();
     const dispatch = useDispatch();
-    const [playbook, updatePlaybook] = useEditPlaybook(playbookId);
+    const updatePlaybook = useUpdatePlaybook(playbookId);
     const team = useSelector<GlobalState, Team>((state) => getTeam(state, playbook?.team_id || ''));
     const permissionToMakePrivate = useHasPlaybookPermission(PlaybookPermissionGeneral.Convert, playbook);
     const licenseToMakePrivate = useAllowMakePlaybookPrivate();
@@ -81,9 +84,9 @@ const PlaybookAccessModal = ({
 
     const onChange = (update: Partial<PlaybookWithChecklist>) => {
         if (playbook) {
-            const updatedPlaybook: PlaybookWithChecklist = {...playbook, ...update};
-            updatePlaybook(updatedPlaybook);
-            onPlaybookChange?.(updatedPlaybook);
+            // const updatedPlaybook: PlaybookWithChecklist = {...playbook, ...update};
+            // updatePlaybook(updatedPlaybook);
+            // onPlaybookChange?.(updatedPlaybook);
         }
     };
 
@@ -121,7 +124,7 @@ const PlaybookAccessModal = ({
     };
 
     const modifyPublic = (pub: boolean) => {
-        onChange({
+        updatePlaybook({
             public: pub,
         });
     };
@@ -142,7 +145,7 @@ const PlaybookAccessModal = ({
         return dispatch(getProfilesInTeam(playbook?.team_id || '', 0, PROFILE_CHUNK_SIZE, '', {active: true}));
     };
 
-    const getSubtitle = (pb: Playbook) => {
+    const getSubtitle = (pb: Loaded<FullPlaybook>) => {
         if (pb.public) {
             if (team) {
                 return formatMessage({defaultMessage: 'Everyone in {team} can view this playbook.'}, {team: team.display_name});

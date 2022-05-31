@@ -151,6 +151,7 @@ const PlaybookEditor = () => {
                 <div>
                     <Controls.Members
                         playbookId={playbook.id}
+                        playbook={playbook}
                         numMembers={playbook.members.length}
                     />
                     <Controls.AutoFollowToggle playbook={playbook}/>

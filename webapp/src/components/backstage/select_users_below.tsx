@@ -20,6 +20,7 @@ import DotMenu, {DropdownMenuItem} from '../dot_menu';
 import {useHasPlaybookPermission} from 'src/hooks';
 
 import {PlaybookPermissionGeneral, PlaybookRole} from 'src/types/permissions';
+import {FullPlaybook, Loaded} from 'src/graphql/hooks';
 
 import ProfileAutocomplete from './profile_autocomplete';
 
@@ -55,7 +56,7 @@ const IconWrapper = styled.div`
 `;
 
 export interface SelectUsersBelowProps {
-    playbook: Playbook;
+    playbook: Loaded<FullPlaybook>;
     members: PlaybookMember[];
     onAddMember: (member: PlaybookMember) => void;
     onRemoveUser: (userid: string) => void;

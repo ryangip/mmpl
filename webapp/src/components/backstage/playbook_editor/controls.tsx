@@ -47,6 +47,7 @@ import DotMenu, {DropdownMenuItem, DropdownMenuItemStyled} from 'src/components/
 import useConfirmPlaybookArchiveModal from '../archive_playbook_modal';
 import CopyLink from 'src/components/widgets/copy_link';
 import useConfirmPlaybookRestoreModal from '../restore_playbook_modal';
+import {FullPlaybook, Loaded} from 'src/graphql/hooks';
 
 type ControlProps = {playbook: {
     id: string,
@@ -105,25 +106,25 @@ export const Back = styled((props: StyledProps) => {
 
 `;
 
-export const Members = (props: {playbookId: string, numMembers: number}) => {
+export const Members = (props: {playbookId: string, playbook: Loaded<FullPlaybook>, numMembers: number}) => {
     const dispatch = useDispatch();
     return (
-        <ButtonIconStyled onClick={() => dispatch(displayEditPlaybookAccessModal(props.playbookId))}>
+        <ButtonIconStyled onClick={() => dispatch(displayEditPlaybookAccessModal(props.playbookId, props.playbook))}>
             <i className={'icon icon-account-multiple-outline'}/>
             <FormattedNumber value={props.numMembers}/>
         </ButtonIconStyled>
     );
 };
 
-export const Share = ({playbook: {id}}: ControlProps) => {
-    const dispatch = useDispatch();
-    return (
-        <TertiaryButtonLarger onClick={() => dispatch(displayEditPlaybookAccessModal(id))}>
-            <i className={'icon icon-lock-outline'}/>
-            <FormattedMessage defaultMessage='Share'/>
-        </TertiaryButtonLarger>
-    );
-};
+// export const Share = ({playbook: {id}}: ControlProps) => {
+//     const dispatch = useDispatch();
+//     return (
+//         <TertiaryButtonLarger onClick={() => dispatch(displayEditPlaybookAccessModal(id))}>
+//             <i className={'icon icon-lock-outline'}/>
+//             <FormattedMessage defaultMessage='Share'/>
+//         </TertiaryButtonLarger>
+//     );
+// };
 
 export const CopyPlaybook = ({playbook: {title, id}}: ControlProps) => {
     return (
@@ -323,11 +324,11 @@ const TitleMenuImpl = ({playbook, children, className, editTitle, refetch}: Titl
                     </>
                 }
             >
-                <DropdownMenuItem
-                    onClick={() => dispatch(displayEditPlaybookAccessModal(playbook.id))}
+                {/* <DropdownMenuItem
+                    onClick={() => (dispatch(displayEditPlaybookAccessModal(playbook.id, playbook)))}
                 >
                     <FormattedMessage defaultMessage='Manage access'/>
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 <DropdownMenuItem
                     onClick={editTitle}
                 >
