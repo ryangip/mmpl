@@ -617,7 +617,7 @@ type PlaybookRunService interface {
 	HandleStatusUpdateReminder(playbookRunID string)
 
 	// HandleScheduledRun handles the events to run a scheduled playbook.
-	HandleScheduledRun(playbookID string)
+	HandleScheduledRun(userID, playbookID string)
 
 	// SetNewReminder sets a new reminder for playbookRunID, removes any pending reminder, removes the
 	// reminder post in the playbookRun's channel, and resets the PreviousReminder and
@@ -679,8 +679,11 @@ type PlaybookRunService interface {
 	// UpdateRunActions updates status update broadcast settings
 	UpdateRunActions(playbookRunID, userID string, settings RunAction) error
 
+	// GetScheduledRun returns the runs scheduled by the specified user in the specified playbook
+	GetScheduledRun(userID, playbookID string) (*ScheduledRun, error)
+
 	// ScheduleRun schedules a new run
-	ScheduleRun(userID, playbookID, runName string, firstRunTime time.Time, frequency time.Duration) error
+	ScheduleRun(userID, playbookID, runName string, firstRunTime time.Time, frequency time.Duration) (*ScheduledRun, error)
 
 	// CancelScheduledRun cancels a scheduled run
 	CancelScheduledRun(userID, playbookID string) error
@@ -781,6 +784,12 @@ type PlaybookRunStore interface {
 
 	// ScheduleRun registers a scheduled run to be executed some time in the future
 	ScheduleRun(run ScheduledRun) error
+
+	// UnscheduleRun removes the runs scheduled by the specified user in the specified playbook
+	UnscheduleRun(userID, playbookID string) error
+
+	// GetScheduledRun gets the run scheduled from the specified playbook
+	GetScheduledRun(userID, playbookID string) (*ScheduledRun, error)
 }
 
 // PlaybookRunTelemetry defines the methods that the PlaybookRunServiceImpl needs from the RudderTelemetry.
